@@ -4,8 +4,9 @@
 import { StorageService } from './storage';
 
 
-const API_BASE_URL = 'https://api.zizie.app';
-const WS_URL = 'wss://api.zizie.app';
+// Configure this for your environment
+const API_BASE_URL = __DEV__ ? 'http://10.0.2.2:8000' : 'https://api.zizie.app';  // 10.0.2.2 is Android emulator localhost
+const WS_URL = __DEV__ ? 'ws://10.0.2.2:8000' : 'wss://api.zizie.app';
 
 
 export interface VoiceSessionResponse {
@@ -71,6 +72,20 @@ export interface Reminder {
   due_date?: string;
   due_time?: string;
   status: string;
+  created_at: string;
+}
+
+export interface Meeting {
+  id: string;
+  title: string;
+  description?: string;
+  start_time: string;
+  end_time: string;
+  platform: 'google_meet' | 'zoom' | 'microsoft_teams';
+  meeting_url?: string;
+  meeting_id?: string;
+  join_info?: string;
+  password?: string;
   created_at: string;
 }
 
@@ -587,6 +602,78 @@ class APIService {
   async deleteReminder(id: string) {
     const response = await fetch(
       `${API_BASE_URL}/api/v1/reminders/${id}`,
+      {
+        method: 'DELETE',
+        headers: await this.getHeaders(),
+      }
+    );
+    
+    return response.json();
+  }
+  
+  // ==================== Meetings ====================
+  
+  async getMeetings(platform?: string): Promise<Meeting[]> {
+    const params = platform ? `?platform=${platform}` : '';
+    
+    const response = await fetch(
+      `${API_BASE_URL}/api/v1/meetings${params}`,
+      {
+        headers: await this.getHeaders(),
+      }
+    );
+    
+    if (!response.ok) {
+      throw new Error('Failed to get meetings');
+    }
+    
+    return response.json();
+  }
+  
+  async createMeeting(meeting: {
+    title: string;
+    description?: string;
+    start_time: string;
+    end_time: string;
+    platform: 'google_meet' | 'zoom' | 'microsoft_teams';
+    attendees?: string[];
+  }): Promise<Meeting> {
+    const response = await fetch(`${API_BASE_URL}/api/v1/meetings`, {
+      method: 'POST',
+      headers: await this.getHeaders(),
+      body: JSON.stringify(meeting),
+    });
+    
+    if (!response.ok) {
+      throw new Error('Failed to create meeting');
+    }
+    
+    return response.json();
+  }
+  
+  async quickCreateMeeting(
+    title: string,
+    platform: 'google_meet' | 'zoom' | 'microsoft_teams' = 'google_meet',
+    minutes: number = 60
+  ): Promise<Meeting> {
+    const response = await fetch(
+      `${API_BASE_URL}/api/v1/meetings/quick?title=${encodeURIComponent(title)}&platform=${platform}&minutes=${minutes}`,
+      {
+        method: 'POST',
+        headers: await this.getHeaders(),
+      }
+    );
+    
+    if (!response.ok) {
+      throw new Error('Failed to create meeting');
+    }
+    
+    return response.json();
+  }
+  
+  async deleteMeeting(id: string) {
+    const response = await fetch(
+      `${API_BASE_URL}/api/v1/meetings/${id}`,
       {
         method: 'DELETE',
         headers: await this.getHeaders(),

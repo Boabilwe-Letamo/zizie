@@ -16,6 +16,7 @@ import { CalendarScreen } from '../screens/CalendarScreen';
 import { NotesScreen } from '../screens/NotesScreen';
 import { VoiceEnrollmentScreen } from '../screens/VoiceEnrollmentScreen';
 import { LoginScreen } from '../screens/LoginScreen';
+import { MeetingsScreen } from '../screens/MeetingsScreen';
 
 // Icons (placeholder)
 const TabIcon = ({ name, color }: { name: string; color: string }) => (
@@ -82,6 +83,16 @@ const MainTabs: React.FC = () => {
           tabBarLabel: 'Notes',
           tabBarIcon: ({ color }) => (
             <TabIcon name="📝" color={color} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Meetings"
+        component={MeetingsScreen}
+        options={{
+          tabBarLabel: 'Meetings',
+          tabBarIcon: ({ color }) => (
+            <TabIcon name="📹" color={color} />
           ),
         }}
       />
