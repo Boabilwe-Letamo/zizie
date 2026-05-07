@@ -84,7 +84,12 @@ async def create_meeting(
         attendees=meeting.attendees,
     )
     
-    result = await meeting_service.create_meeting(details)
+    # Pass Google token if available for Google Meet
+    access_token = None
+    if meeting.platform == "google_meet" and current_user.providers:
+        access_token = current_user.providers.get("google", {}).get("access_token")
+    
+    result = await meeting_service.create_meeting(details, access_token=access_token)
     
     if not result.success:
         raise HTTPException(500, result.error or "Failed to create meeting")
