@@ -9,7 +9,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.testclient import TestClient  # For demo mode
 
-from app.api.v1 import auth, voice, contacts, calendar, email, notes, reminders
+from app.api.v1 import auth, voice, contacts, calendar, email, notes, reminders, meetings
 from app.core.config import settings
 from app.core.security import SecurityUtils
 from app.db.base import Base
@@ -55,6 +55,7 @@ app.include_router(calendar.router, prefix="/api/v1/calendar", tags=["Calendar"]
 app.include_router(email.router, prefix="/api/v1/email", tags=["Email"])
 app.include_router(notes.router, prefix="/api/v1/notes", tags=["Notes"])
 app.include_router(reminders.router, prefix="/api/v1/reminders", tags=["Reminders"])
+app.include_router(meetings.router, prefix="/api/v1/meetings", tags=["Meetings"])
 
 
 @app.get("/", tags=["Health"])

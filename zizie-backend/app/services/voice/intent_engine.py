@@ -25,6 +25,7 @@ class IntentType(Enum):
     REMINDER_CREATE = "reminder_create"
     REMINDER_READ = "reminder_read"
     REMINDER_COMPLETE = "reminder_complete"
+    MEETING_CREATE = "meeting_create"  # Video meeting
     MEETING_SUMMARIZE = "meeting_summarize"
     PHONE_CALL = "phone_call"
     NAVIGATION = "navigation"
@@ -95,6 +96,15 @@ class IntentEngine:
             r"(?:send|text|message).*(?:to)",
             r"(?:whatsapp|message).*",
         ],
+        IntentType.MEETING_CREATE: [
+            r"(?:start|create|set up).*(?:zoom|meet|teams|video)",
+            r"(?:video|call|join).*(?:zoom|meet|teams)",
+            r"(?:schedule|create).*video.*meeting",
+            r"start.*google meet",
+            r"start.*zoom call",
+            r"start.*teams",
+            r"start a.*meeting",
+        ],
     }
     
     # Entity extraction patterns
@@ -113,6 +123,10 @@ class IntentEngine:
         ],
         "email": [
             r"to\s+([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})",
+        ],
+        "platform": [
+            r"(?:via|using|on|with)\s+(google\s*meet|zoom|microsoft\s*teams|teams)",
+            r"(google\s*meet|zoom|teams|microsoft\s*teams)",
         ],
     }
     

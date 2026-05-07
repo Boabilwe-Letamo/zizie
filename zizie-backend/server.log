@@ -1,7 +1,7 @@
 nohup: ignoring input
-INFO:     Started server process [3685]
+INFO:     Started server process [4755]
 INFO:     Waiting for application startup.
 INFO:     Application startup complete.
 INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
-INFO:     127.0.0.1:53582 - "GET /api/v1/health HTTP/1.1" 200 OK
-INFO:     127.0.0.1:49480 - "GET /api/v1/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45484 - "GET /api/v1/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45488 - "POST /api/v1/meetings/quick?title=Test+Meeting\ HTTP/1.1" 404 Not Found
