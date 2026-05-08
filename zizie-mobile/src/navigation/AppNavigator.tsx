@@ -1,5 +1,5 @@
 /**
- * Navigation Configuration
+ * Navigation Configuration - Simplified for voice-first experience
  */
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native';
@@ -11,6 +11,7 @@ import { theme } from '../constants/theme';
 // Screens
 import { HomeScreen } from '../screens/HomeScreen';
 import { SettingsScreen } from '../screens/SettingsScreen';
+import { QuickActionScreen } from '../screens/QuickActionScreen';
 import { ContactsScreen } from '../screens/ContactsScreen';
 import { CalendarScreen } from '../screens/CalendarScreen';
 import { NotesScreen } from '../screens/NotesScreen';
@@ -46,56 +47,31 @@ const MainTabs: React.FC = () => {
         headerShown: false,
       }}
     >
+      {/* Main voice screen */}
       <Tab.Screen
         name="Home"
         component={HomeScreen}
         options={{
           tabBarLabel: 'Home',
           tabBarIcon: ({ color }) => (
-            <TabIcon name="🏠" color={color} />
+            <TabIcon name="🎤" color={color} />
           ),
         }}
       />
+      
+      {/* Quick access to all features */}
       <Tab.Screen
-        name="Calendar"
-        component={CalendarScreen}
+        name="Quick"
+        component={QuickActionScreen}
         options={{
-          tabBarLabel: 'Calendar',
+          tabBarLabel: 'Quick',
           tabBarIcon: ({ color }) => (
-            <TabIcon name="📅" color={color} />
+            <TabIcon name="⚡" color={color} />
           ),
         }}
       />
-      <Tab.Screen
-        name="Contacts"
-        component={ContactsScreen}
-        options={{
-          tabBarLabel: 'Contacts',
-          tabBarIcon: ({ color }) => (
-            <TabIcon name="👤" color={color} />
-          ),
-        }}
-      />
-      <Tab.Screen
-        name="Notes"
-        component={NotesScreen}
-        options={{
-          tabBarLabel: 'Notes',
-          tabBarIcon: ({ color }) => (
-            <TabIcon name="📝" color={color} />
-          ),
-        }}
-      />
-      <Tab.Screen
-        name="Meetings"
-        component={MeetingsScreen}
-        options={{
-          tabBarLabel: 'Meetings',
-          tabBarIcon: ({ color }) => (
-            <TabIcon name="📹" color={color} />
-          ),
-        }}
-      />
+      
+      {/* Settings & profile */}
       <Tab.Screen
         name="Settings"
         component={SettingsScreen}

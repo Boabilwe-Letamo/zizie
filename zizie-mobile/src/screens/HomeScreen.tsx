@@ -1,8 +1,10 @@
 /**
- * Home Screen - Main voice interaction screen
+ * Home Screen - Clean Voice-First Interface
+ * 
+ * Focus: Just the microphone and response
  */
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, Animated } from 'react-native';
 import { useVoice } from '../hooks/useVoice';
 import { theme } from '../constants/theme';
 
@@ -26,7 +28,7 @@ export const HomeScreen: React.FC = () => {
       </View>
       
       <View style={styles.content}>
-        {/* Voice indicator */}
+        {/* Voice button */}
         <TouchableOpacity
           style={[
             styles.voiceButton,
@@ -35,50 +37,51 @@ export const HomeScreen: React.FC = () => {
           ]}
           onPress={handleVoicePress}
           disabled={state.isProcessing}
+          activeOpacity={0.8}
         >
           <Text style={styles.voiceButtonText}>
             {state.isListening ? '🛑' : state.isProcessing ? '⏳' : '🎤'}
           </Text>
         </TouchableOpacity>
         
-        {/* Status text */}
+        {/* Status */}
         <Text style={styles.statusText}>
-          {state.isListening && 'Listening...'}
-          {state.isProcessing && 'Processing...'}
-          {!state.isListening && !state.isProcessing && 'Tap to speak'}
+          {state.isListening ? 'Listening...' : 
+           state.isProcessing ? 'Processing...' : 
+           'Tap to speak'}
         </Text>
         
-        {/* Transcript */}
-        {state.transcript && (
-          <View style={styles.transcriptContainer}>
-            <Text style={styles.transcriptLabel}>You said:</Text>
-            <Text style={styles.transcriptText}>{state.transcript}</Text>
-          </View>
-        )}
-        
-        {/* Response */}
-        {state.response && (
-          <View style={styles.responseContainer}>
-            <Text style={styles.responseLabel}>Zizie:</Text>
-            <Text style={styles.responseText}>{state.response}</Text>
+        {/* Response area */}
+        {(state.transcript || state.response) && (
+          <View style={styles.responseBox}>
+            {state.transcript && (
+              <View style={styles.textBlock}>
+                <Text style={styles.textLabel}>You:</Text>
+                <Text style={styles.textValue}>{state.transcript}</Text>
+              </View>
+            )}
+            {state.response && (
+              <View style={styles.textBlock}>
+                <Text style={[styles.textLabel, { color: theme.colors.primary }]}>Zizie:</Text>
+                <Text style={styles.textValue}>{state.response}</Text>
+              </View>
+            )}
           </View>
         )}
         
         {/* Confirmation */}
         {state.requiresConfirmation && (
-          <View style={styles.confirmationContainer}>
-            <Text style={styles.confirmationText}>
-              This action requires confirmation.
-            </Text>
-            <View style={styles.confirmationButtons}>
-              <TouchableOpacity style={styles.confirmButton}>
-                <Text style={styles.confirmButtonText}>Confirm</Text>
+          <View style={styles.confirmBox}>
+            <Text style={styles.confirmText}>Confirm this action?</Text>
+            <View style={styles.confirmButtons}>
+              <TouchableOpacity style={styles.confirmBtn}>
+                <Text style={styles.confirmBtnText}>✓ Yes</Text>
               </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.cancelButton}
+              <TouchableOpacity 
+                style={[styles.confirmBtn, styles.cancelBtn]}
                 onPress={cancelCommand}
               >
-                <Text style={styles.cancelButtonText}>Cancel</Text>
+                <Text style={styles.cancelBtnText}>✗ No</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -86,175 +89,47 @@ export const HomeScreen: React.FC = () => {
         
         {/* Error */}
         {state.error && (
-          <View style={styles.errorContainer}>
-            <Text style={styles.errorText}>{state.error}</Text>
-          </View>
+          <Text style={styles.errorText}>{state.error}</Text>
         )}
-      </View>
-      
-      {/* Quick actions */}
-      <View style={styles.quickActions}>
-        <TouchableOpacity style={styles.quickAction}>
-          <Text style={styles.quickActionText}>📅 Calendar</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.quickAction}>
-          <Text style={styles.quickActionText}>✉️ Email</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.quickAction}>
-          <Text style={styles.quickActionText}>📝 Note</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.quickAction}>
-          <Text style={styles.quickActionText}>⏰ Reminder</Text>
-        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: theme.colors.background,
-  },
-  header: {
-    padding: theme.spacing.lg,
-    alignItems: 'center',
-  },
-  title: {
-    fontSize: theme.typography.fontSizes.xxl,
-    fontWeight: theme.typography.fontWeights.bold,
-    color: theme.colors.text,
-  },
-  subtitle: {
-    fontSize: theme.typography.fontSizes.sm,
-    color: theme.colors.textSecondary,
-    marginTop: theme.spacing.xs,
-  },
-  content: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: theme.spacing.lg,
-  },
+  container: { flex: 1, backgroundColor: theme.colors.background },
+  header: { padding: theme.spacing.lg, alignItems: 'center', paddingTop: theme.spacing.xxl },
+  title: { fontSize: 32, fontWeight: 'bold', color: theme.colors.text },
+  subtitle: { fontSize: theme.typography.fontSizes.sm, color: theme.colors.textSecondary, marginTop: 4 },
+  
+  content: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: theme.spacing.lg },
+  
   voiceButton: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
+    width: 140, height: 140, borderRadius: 70,
     backgroundColor: theme.colors.primary,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: 'center', justifyContent: 'center',
     ...theme.shadows.lg,
   },
-  voiceButtonActive: {
-    backgroundColor: theme.colors.voiceActive,
-  },
-  voiceButtonProcessing: {
-    backgroundColor: theme.colors.voiceProcessing,
-  },
-  voiceButtonText: {
-    fontSize: 48,
-  },
-  statusText: {
-    fontSize: theme.typography.fontSizes.md,
-    color: theme.colors.textSecondary,
-    marginTop: theme.spacing.md,
-  },
-  transcriptContainer: {
-    marginTop: theme.spacing.lg,
-    padding: theme.spacing.md,
-    backgroundColor: theme.colors.backgroundSecondary,
-    borderRadius: theme.borderRadius.md,
-    width: '100%',
-  },
-  transcriptLabel: {
-    fontSize: theme.typography.fontSizes.xs,
-    color: theme.colors.textTertiary,
-  },
-  transcriptText: {
-    fontSize: theme.typography.fontSizes.md,
-    color: theme.colors.text,
-    marginTop: theme.spacing.xs,
-  },
-  responseContainer: {
-    marginTop: theme.spacing.md,
-    padding: theme.spacing.md,
-    backgroundColor: theme.colors.primaryLight + '20',
-    borderRadius: theme.borderRadius.md,
-    width: '100%',
-  },
-  responseLabel: {
-    fontSize: theme.typography.fontSizes.xs,
-    color: theme.colors.primary,
-  },
-  responseText: {
-    fontSize: theme.typography.fontSizes.md,
-    color: theme.colors.text,
-    marginTop: theme.spacing.xs,
-  },
-  confirmationContainer: {
-    marginTop: theme.spacing.lg,
-    padding: theme.spacing.md,
-    backgroundColor: theme.colors.warning + '20',
-    borderRadius: theme.borderRadius.md,
-    width: '100%',
-  },
-  confirmationText: {
-    fontSize: theme.typography.fontSizes.sm,
-    color: theme.colors.warning,
-    textAlign: 'center',
-  },
-  confirmationButtons: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginTop: theme.spacing.md,
-    gap: theme.spacing.md,
-  },
-  confirmButton: {
-    paddingVertical: theme.spacing.sm,
-    paddingHorizontal: theme.spacing.lg,
-    backgroundColor: theme.colors.success,
-    borderRadius: theme.borderRadius.md,
-  },
-  confirmButtonText: {
-    color: theme.colors.textInverse,
-    fontWeight: theme.typography.fontWeights.semibold,
-  },
-  cancelButton: {
-    paddingVertical: theme.spacing.sm,
-    paddingHorizontal: theme.spacing.lg,
-    backgroundColor: theme.colors.error,
-    borderRadius: theme.borderRadius.md,
-  },
-  cancelButtonText: {
-    color: theme.colors.textInverse,
-    fontWeight: theme.typography.fontWeights.semibold,
-  },
-  errorContainer: {
-    marginTop: theme.spacing.lg,
-    padding: theme.spacing.md,
-    backgroundColor: theme.colors.error + '20',
-    borderRadius: theme.borderRadius.md,
-    width: '100%',
-  },
-  errorText: {
-    fontSize: theme.typography.fontSizes.sm,
-    color: theme.colors.error,
-  },
-  quickActions: {
-    flexDirection: 'row',
-    padding: theme.spacing.md,
-    borderTopWidth: 1,
-    borderTopColor: theme.colors.border,
-  },
-  quickAction: {
-    flex: 1,
-    paddingVertical: theme.spacing.sm,
-    alignItems: 'center',
-  },
-  quickActionText: {
-    fontSize: theme.typography.fontSizes.xs,
-    color: theme.colors.textSecondary,
-  },
+  voiceButtonActive: { backgroundColor: theme.colors.voiceActive },
+  voiceButtonProcessing: { backgroundColor: theme.colors.voiceProcessing },
+  voiceButtonText: { fontSize: 56 },
+  
+  statusText: { fontSize: theme.typography.fontSizes.md, color: theme.colors.textSecondary, marginTop: theme.spacing.lg },
+  
+  responseBox: { marginTop: theme.spacing.xl, width: '100%', gap: theme.spacing.md },
+  textBlock: { padding: theme.spacing.md, backgroundColor: theme.colors.backgroundSecondary, borderRadius: theme.borderRadius.md },
+  textLabel: { fontSize: theme.typography.fontSizes.xs, color: theme.colors.textTertiary, marginBottom: 4 },
+  textValue: { fontSize: theme.typography.fontSizes.md, color: theme.colors.text },
+  
+  confirmBox: { marginTop: theme.spacing.lg, padding: theme.spacing.md, backgroundColor: theme.colors.warning + '20', borderRadius: theme.borderRadius.md, alignItems: 'center' },
+  confirmText: { color: theme.colors.warning, marginBottom: theme.spacing.md },
+  confirmButtons: { flexDirection: 'row', gap: theme.spacing.md },
+  confirmBtn: { paddingVertical: theme.spacing.sm, paddingHorizontal: theme.spacing.lg, backgroundColor: theme.colors.success, borderRadius: theme.borderRadius.sm },
+  confirmBtnText: { color: theme.colors.textInverse, fontWeight: '600' },
+  cancelBtn: { backgroundColor: theme.colors.error },
+  cancelBtnText: { color: theme.colors.textInverse, fontWeight: '600' },
+  
+  errorText: { marginTop: theme.spacing.lg, color: theme.colors.error, fontSize: theme.typography.fontSizes.sm },
 });
 
 export default HomeScreen;
