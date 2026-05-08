@@ -20,15 +20,13 @@ redis>=5.0.0
 python-jose[cryptography]>=3.3.0
 passlib[bcrypt]>=1.7.4
 
-# Voice Services
-whisperx>=4.0.0       # FREE! Open source STT with timestamps
-pyannote-audio>=3.0.0  # FREE! Speaker diarization
-torch>=2.0.0          # For WhisperX
-torchaudio>=2.0.0       # For audio processing
+# Voice Services - Optional (requires special setup)
+# whisperx>=3.2.0       # Open source STT with timestamps
+# pyannote.audio>=3.0.0  # Speaker diarization  
+# torch>=2.0.0          # For WhisperX
 
 # Optional: OpenAI (for cloud fallback)
 openai>=1.3.0
-elevenlabs>=1.21.0
 numpy>=1.24.0
 
 # Data Validation
@@ -56,13 +54,7 @@ email-validator>=2.1.0
 python-dateutil>=2.8.2
 python-dotenv>=1.0.0
 bcrypt>=4.1.0
-secrets>=1.0.0
 
 # Development
 pytest>=7.4.0
 pytest-asyncio>=0.21.0
-pytest-cov>=4.1.0
-black>=23.0.0
-isort>=5.12.0
-mypy>=1.7.0
-flake8>=6.1.0
